@@ -14,6 +14,9 @@ export default defineConfig({
         short_name: 'PWANotification',
         description: 'A Vite PWA app to test notifications',
         theme_color: '#000000',
+        background_color: '#ffffff',
+        display: 'standalone',
+        start_url: '/',
         icons: [
           {
             src: 'pwa-192x192.png',
