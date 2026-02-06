@@ -1,73 +1,84 @@
-# React + TypeScript + Vite
+# PWA Push Notification Test
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A proof-of-concept Progressive Web App (PWA) demonstrating push notifications triggered from a Python Flask backend.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🔔 Push notifications with Web Push protocol
+- 🔐 VAPID authentication for secure push
+- 🔒 Environment variables for secure secrets management
+- ⚛️ React + TypeScript frontend
+- 🐍 Python Flask backend
+- 📱 Full PWA support with service worker
 
-## React Compiler
+## 🚀 Quick Start
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
+- Node.js and npm
+- Python 3.7+
 
-## Expanding the ESLint configuration
+### Setup
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```bash
+# 1. Install frontend dependencies
+npm install
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# 2. Install backend dependencies
+cd backend
+pip3 install -r requirements.txt
+cd ..
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+# 3. Generate VAPID keys and configure .env files
+# See backend/README.md for detailed instructions
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# 4. Start backend (Terminal 1)
+cd backend
+python3 server.py
+
+# 5. Start frontend (Terminal 2)
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Usage
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Open http://localhost:5173 in your browser
+2. Click **"Request Permission"** to enable notifications
+3. Click **"Subscribe to Notifications"** to register with the backend
+4. Click **"Send Test Notification"** to receive a notification
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+**🔒 Security:** All secrets are stored in `.env` files (not committed to git).
+
+## 📚 Documentation
+
+- [backend/README.md](backend/README.md) - Backend API documentation and VAPID key generation
+
+## 🏗️ Architecture
+
 ```
+┌─────────────┐         ┌──────────────┐         ┌─────────────┐
+│   React     │         │   Python     │         │   Browser   │
+│   PWA       │ ◄─────► │   Flask      │ ◄─────► │   Push      │
+│  (Client)   │         │  (Backend)   │         │   Service   │
+└─────────────┘         └──────────────┘         └─────────────┘
+      │                        │
+      │                        │
+      ▼                        ▼
+┌─────────────┐         ┌──────────────┐
+│  Service    │         │  Stored      │
+│  Worker     │         │  Subscript.  │
+└─────────────┘         └──────────────┘
+```
+
+## 🛠️ Built With
+
+### Frontend
+- React 19
+- TypeScript
+- Vite
+- vite-plugin-pwa
+
+### Backend
+- Flask
+- pywebpush
+- py-vapid
+- flask-cors
