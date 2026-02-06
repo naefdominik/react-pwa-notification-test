@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from py_vapid import Vapid
 import json
 import os
+from urllib.parse import urlparse
 
 # Load environment variables from .env file
 load_dotenv()
@@ -55,9 +56,19 @@ except Exception as e:
     os.unlink(VAPID_KEY_FILE)
     exit(1)
 
-VAPID_CLAIMS = {
-    "sub": VAPID_EMAIL
-}
+
+def get_vapid_claims(subscription_endpoint):
+    """
+    Generate VAPID claims with the correct audience (aud) for the push service
+    The aud claim must be the origin of the push service endpoint
+    """
+    parsed_url = urlparse(subscription_endpoint)
+    audience = f"{parsed_url.scheme}://{parsed_url.netloc}"
+    
+    return {
+        "sub": VAPID_EMAIL,
+        "aud": audience
+    }
 
 
 @app.route('/subscribe', methods=['POST'])
@@ -149,12 +160,15 @@ def send_notification_to_all(notification_data):
     
     for subscription in subscriptions[:]:  # Create a copy to allow removal during iteration
         try:
+            # Generate VAPID claims with correct audience for this subscription
+            vapid_claims = get_vapid_claims(subscription['endpoint'])
+            
             # Send push notification (pywebpush requires file path for VAPID key)
             webpush(
                 subscription_info=subscription,
                 data=json.dumps(notification_data),
                 vapid_private_key=VAPID_KEY_FILE,
-                vapid_claims=VAPID_CLAIMS
+                vapid_claims=vapid_claims
             )
             success_count += 1
             print(f'Notification sent successfully to: {subscription["endpoint"][:50]}...')
